@@ -1,9 +1,11 @@
 #include "player.h"
 #include <stdio.h> // Do NULL
+#include <math.h>
 
 void InitPlayer(Player* player){
     player->position = (Vector2){ 0.f, 0.f };
     player->controllerIndex = -1;
+    player->speed = 3.f;
     player->camera.target = player->position;
     player->camera.offset = (Vector2){ GetScreenWidth()/2.0f, GetScreenHeight()/2.0f };
     player->camera.rotation = 0.0f;
@@ -37,28 +39,39 @@ void ControlHuman(Player* player, Human* humans, const int humanCount){
     }
 }
 
-void UpdatePlayer(Player* player){
-    if (IsKeyDown(KEY_D)) player->position.x += 2;
-    if (IsKeyDown(KEY_A)) player->position.x -= 2;
-    if (IsKeyDown(KEY_S)) player->position.y += 2;
-    if (IsKeyDown(KEY_W)) player->position.y -= 2;
+void UpdatePlayer(Player* p){
+    Vector2 vel = { 0, 0 };
+
+    if (IsKeyDown(KEY_D)) vel.x += 1;
+    if (IsKeyDown(KEY_A)) vel.x -= 1;
+    if (IsKeyDown(KEY_S)) vel.y += 1;
+    if (IsKeyDown(KEY_W)) vel.y -= 1;
+
+    if (vel.x != 0 || vel.y != 0) {
+        float length = sqrtf(vel.x * vel.x + vel.y * vel.y);
+        vel.x /= length;
+        vel.y /= length;
+
+        p->position.x += vel.x * p->speed;
+        p->position.y += vel.y * p->speed;
+    }
     
-    DrawText(TextFormat("x: %f, y: %f", player->position.x, player->position.y), 10, 10, 20, RED);
+    DrawText(TextFormat("x: %f, y: %f", p->position.x, p->position.y), 10, 10, 20, RED);
     
-    if(player->controller != NULL){
-        DrawText(TextFormat("Controlling human %d", player->controllerIndex), 10, 40, 20, RED);
-        player->controller->position = player->position;
+    if(p->controller != NULL){
+        DrawText(TextFormat("Controlling human %d", p->controllerIndex), 10, 40, 20, RED);
+        p->controller->position = p->position;
     }
 
-    player->camera.zoom += GetMouseWheelMove() * 0.1f;
+    p->camera.zoom += GetMouseWheelMove() * 0.1f;
 
-    if (player->camera.zoom > 3.0f) player->camera.zoom = 3.0f;
-    if (player->camera.zoom < 0.1f) player->camera.zoom = 0.1f;
+    if (p->camera.zoom > 3.0f) p->camera.zoom = 3.0f;
+    if (p->camera.zoom < 0.1f) p->camera.zoom = 0.1f;
 
     if (IsKeyPressed(KEY_R)) {
-        player->camera.zoom = 1.0f;
-        player->camera.rotation = 0.0f;
+        p->camera.zoom = 1.0f;
+        p->camera.rotation = 0.0f;
     }
 
-    player->camera.target = player->position;
+    p->camera.target = p->position;
 }

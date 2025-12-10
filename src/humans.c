@@ -14,14 +14,14 @@ void UpdateHumans(Human* humans, const int humanCount, bool boundaryCheck){
             
             if(boundaryCheck){
                 if(h->position.x < 0){
-                    h->position.x = GetScreenWidth();
-                }else if(h->position.x > GetScreenWidth()){
+                    h->position.x = 1024.f;
+                }else if(h->position.x > 1024.f){
                     h->position.x = 0;
                 }
                 
                 if(h->position.y < 0){
-                    h->position.y = GetScreenHeight();
-                }else if(h->position.y > GetScreenHeight()){
+                    h->position.y = 1024.f;
+                }else if(h->position.y > 1024.f){
                     h->position.y = 0;
                 }
             }

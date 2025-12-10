@@ -9,6 +9,7 @@ typedef struct {
     Camera2D camera;
     int controllerIndex;
     Human* controller;
+    float speed;
 } Player;
 
 void InitPlayer(Player* player);
